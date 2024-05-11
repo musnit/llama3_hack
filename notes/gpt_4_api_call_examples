@@ -1,0 +1,80 @@
+gpt_4_api_call_examples
+
+//uploading file
+
+curl https://api.openai.com/v1/files \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F purpose="vision" \
+  -F file="@img.png"
+
+// creating assistant
+
+curl https://api.openai.com/v1/assistants \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{
+    "name": "Drawing wizard",
+    "description": "You are a drawing wizard. A user provides you with an image that they have drawn on their canvas and you bring it to life by generating code to animate the image on the canvas. The drawing is made up of multiple simple shapes - circles, rectangles, and triangles. You are provided with the drawing image and a list of shapes in the image. Respond by first describing the image overall, then describing each shape and then setting code that controls the position of the shape at each frame of the animation.",
+    "model": "gpt-4-turbo",
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "set_shape_positions",
+          "description": "Set the code of each shape that will run at each frame of the animation for that shape.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "shapes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "shape_id": { "type": "number" },
+                    "getNewShapePosition_code": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }'
+
+// creating thread
+
+  curl https://api.openai.com/v1/threads/thread_Uicj7ly9Bsbii4LpUdH1UabV/runs \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "OpenAI-Beta: assistants=v2" \
+  -d '{
+    "assistant_id": "asst_iwNUneXRFLGdLqwV51oSZKLH",
+    "instructions": "The code MUST be a javascript function that returns the x and y coordinates of the shape at that frame. The code should be as simple as possible and should not use any external libraries. Here is an example: getNewShapePosition() { return {x: 100, y: 100}; }. You MUST provide code for at least one of the shapes in the image, but dont need to set them all."
+  }'
+
+// checking thread
+curl https://api.openai.com/v1/threads/thread_Uicj7ly9Bsbii4LpUdH1UabV/messages \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer $OPENAI_API_KEY" \
+-H "OpenAI-Beta: assistants=v2"
+
+// prompt for the image analysis
+
+The shapes in the image are as follows:
+
+[{"id":1,"type":"triangle","size":5,"position":{"x":20,"y":20}},{"id":2,"type":"triangle","size":5,"position":{"x":120,"y":20}},{"id":3,"type":"circle","size":50,"position":{"x":90,"y":80}},{"id":4,"type":"circle","size":3,"position":{"x":30,"y":40}},{"id":5,"type":"circle","size":3,"position":{"x":110,"y":40}},{"id":5,"type":"circle","size":8,"position":{"x":90,"y":90}}]
+
+Provide a description of the image overall, as well as a simple high-level, one-line description of each of the individual shapes in the following format: {
+  "overall": "OVERALL_DESCRIPTION",
+  "shapes": [
+    {
+      "id": SHAPE_ID,
+      "description": "SHAPE_DESCRIPTION"
+    },
+    ...
+  ]
+}
+
+The code MUST be a javascript function that returns the x and y coordinates of the shape at that frame. The code should be as simple as possible and should not use any external libraries. Here is an example: getNewShapePosition() { return {x: 100, y: 100}; }. You MUST provide code for at least one of the shapes in the image, but dont need to set them all.
