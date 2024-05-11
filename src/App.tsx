@@ -3,8 +3,8 @@ import "./App.css";
 
 function App() {
   return (
-     <div style={{ position: "fixed", inset: 0 }}>
-       <Tldraw />
+    <div style={{ position: "fixed", inset: 0 }}>
+      <Tldraw />
     </div>
   );
 }
