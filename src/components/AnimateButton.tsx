@@ -2,7 +2,6 @@ import { track, useEditor, exportToBlob } from "tldraw";
 import { useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
-import { getGroqChatCompletion } from "../tools/call-grok";
 import { getOpenAIChatCompletion } from "../tools/call-openai";
 
 export type StoryState = {
@@ -97,7 +96,7 @@ export const AnimateButton = track(() => {
     // });
     // console.log({ blob });
     // })
-    const completion = await getOpenAIChatCompletion(story);
+    const completion = (await getOpenAIChatCompletion(story))!;
     try {
       const cleaned = completion.replace(/\n/g, "");
       console.log({ cleaned });
