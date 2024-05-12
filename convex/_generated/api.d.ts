@@ -14,6 +14,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as codegen from "../codegen.js";
 import type * as creatures from "../creatures.js";
 import type * as models from "../models.js";
 
@@ -26,6 +27,7 @@ import type * as models from "../models.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  codegen: typeof codegen;
   creatures: typeof creatures;
   models: typeof models;
 }>;
