@@ -15,6 +15,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as creatures from "../creatures.js";
+import type * as models from "../models.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -26,6 +27,7 @@ import type * as creatures from "../creatures.js";
  */
 declare const fullApi: ApiFromModules<{
   creatures: typeof creatures;
+  models: typeof models;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
