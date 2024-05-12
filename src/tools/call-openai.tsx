@@ -1,14 +1,14 @@
-import Groq from "groq-sdk";
+import OpenAI from "openai";
 import { StoryState } from "../components/AnimateButton";
 
-console.log(import.meta.env);
-const groq = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-export async function getGroqChatCompletion(storySoFar: StoryState[]) {
-  const chatCompletion = await groq.chat.completions.create({
+export async function getOpenAIChatCompletion(storySoFar: StoryState[]) {
+  const chatCompletion = await openai.chat.completions.create({
+    model: "gpt-4-turbo",
     messages: [
       {
         role: "system",
@@ -19,29 +19,29 @@ The story canvas is specified with a JSON object that shows the position of the 
 An example of this is:
 
 {
-  "square": {
-    "x": 50,
-    "y": 50
-  },
-  "circle": {
-    "x": 250,
-    "y": 250
-  },
-  "narration": "A square and a circle have appeared!"
+"square": {
+  "x": 50,
+  "y": 50
+},
+"circle": {
+  "x": 250,
+  "y": 250
+},
+"narration": "A square and a circle have appeared!"
 }
 
 An example of the next update to this story could be:
 
 {
-  "square": {
-    "x": 200,
-    "y": 50
-  },
-  "circle": {
-    "x": 250,
-    "y": 250
-  },
-  "narration": "The square moves towards the circle!"
+"square": {
+  "x": 200,
+  "y": 50
+},
+"circle": {
+  "x": 250,
+  "y": 250
+},
+"narration": "The square moves towards the circle!"
 }
 
 The canvas is size 800 by 500.
@@ -55,8 +55,7 @@ When prompted, the user will provide you with the current story and you should r
         content: JSON.stringify(storySoFar),
       },
     ],
-    // response_format: { type: "json_object" },
-    model: "llama3-8b-8192",
+    response_format: { type: "json_object" },
   });
   console.log({ storySoFar, chatCompletion });
   const completion = chatCompletion.choices[0]?.message?.content;
