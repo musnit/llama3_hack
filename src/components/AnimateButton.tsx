@@ -88,8 +88,8 @@ export const AnimateButton = track(() => {
     console.log({ creatureResult });
 
     const assetId = AssetRecordType.createId();
-    const imageWidth = 400;
-    const imageHeight = 400;
+    const imageWidth = 1024;
+    const imageHeight = 1024;
     //[2]
     editor.createAssets([
       {
