@@ -1,4 +1,4 @@
-import { track, useEditor, exportToBlob } from "tldraw";
+import { track, useEditor, exportToBlob, AssetRecordType } from "tldraw";
 import { useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
@@ -73,10 +73,10 @@ export const AnimateButton = track(() => {
     const shapes = editor.getSelectedShapes();
     const shapeIds = shapes.map((shape) => shape.id);
     const blob = await exportToBlob({
-       editor,
-       ids: shapeIds,
-       format: "png",
-     });
+      editor,
+      ids: shapeIds,
+      format: "png",
+    });
     const result = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": blob!.type },
@@ -84,8 +84,42 @@ export const AnimateButton = track(() => {
     });
     const { storageId } = await result.json();
     console.log({ storageId });
-    await createCreature({ storageId, author: "anon" });
-  }
+    const creatureResult = await createCreature({ storageId, author: "anon" });
+    console.log({ creatureResult });
+
+    const assetId = AssetRecordType.createId();
+    const imageWidth = 400;
+    const imageHeight = 400;
+    //[2]
+    editor.createAssets([
+      {
+        id: assetId,
+        type: "image",
+        typeName: "asset",
+        props: {
+          name: "creature",
+          src: creatureResult.creature.imgUrl,
+          w: imageWidth,
+          h: imageHeight,
+          mimeType: "image/png",
+          isAnimated: false,
+        },
+        meta: {},
+      },
+    ]);
+    //[3]
+    editor.createShape({
+      type: "image",
+      // Let's center the image in the editor
+      x: (window.innerWidth - imageWidth) / 2,
+      y: (window.innerHeight - imageHeight) / 2,
+      props: {
+        assetId,
+        w: imageWidth,
+        h: imageHeight,
+      },
+    });
+  };
 
   const runAnimate = async () => {
     // const shapeIds = shapes.map((shape) => shape.id);
@@ -111,12 +145,8 @@ export const AnimateButton = track(() => {
 
   return (
     <div style={{ position: "absolute", zIndex: 999 }}>
-    <button onClick={runAnimate}>
-      animate it!
-    </button>
-    <button onClick={createImageCreature}>
-      make it a creature!
-    </button>
-  </div>
+      <button onClick={runAnimate}>animate it!</button>
+      <button onClick={createImageCreature}>make it a creature!</button>
+    </div>
   );
 });
